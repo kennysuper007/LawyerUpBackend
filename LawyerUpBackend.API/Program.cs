@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDatabaseServices(builder.Configuration);
 
-builder.Services.AddApplication(); //Extension Method in Application Library
+builder.Services.AddApplication(builder.Configuration); //Extension Method in Application Library
 
 var app = builder.Build();
 

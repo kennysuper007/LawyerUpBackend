@@ -16,7 +16,7 @@ namespace LawyerUpBackend.API.Controllers
             _predictionModelService = predictionModelService;
         }
         
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> CreateAsync(string predictionModelQuery)
         {
             return Ok(await _predictionModelService.GetPredictionAsync(predictionModelQuery));

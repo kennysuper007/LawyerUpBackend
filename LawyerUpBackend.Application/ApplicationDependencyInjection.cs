@@ -10,10 +10,10 @@ namespace LawyerUpBackend.Application;
 
 public static class ApplicationDependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services )
+    public static IServiceCollection AddApplication(this IServiceCollection services,IConfiguration configuration)
     {
         services.AddServices();
-
+        services.AddPythonServices(configuration);
 
         return services;
     }
@@ -24,5 +24,11 @@ public static class ApplicationDependencyInjection
         services.AddScoped<ILawyerService, LawyerService>();
     }
 
+    public static void AddPythonServices(this IServiceCollection services,IConfiguration configuration)
+    {
+        string pythonPATH = configuration.GetSection("Python").GetSection("Python_ENV").Value;
+        string executePATH = configuration.GetSection("Python").GetSection("ExecutePath").Value;
+        services.AddTransient<IPredictionModelService>(provider => new PredictionModelService(pythonPATH,executePATH));
+    }
     
 }
