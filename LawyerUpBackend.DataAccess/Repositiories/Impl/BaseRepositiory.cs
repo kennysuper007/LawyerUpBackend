@@ -40,7 +40,10 @@ namespace LawyerUpBackend.DataAccess.Repositiories.Impl
         {
             return await DbSet.Where(predicate).ToListAsync();
         }
-
+        public IQueryable<TEntity> GetAll()
+        {
+            return DbSet.AsQueryable();
+        }
         public async Task<List<TEntity>> GetAllAsync()
         {
             return await DbSet.ToListAsync();
@@ -61,6 +64,20 @@ namespace LawyerUpBackend.DataAccess.Repositiories.Impl
             await Context.SaveChangesAsync();
 
             return entity;
+        }
+    }
+    public static class NullSafeExtensions
+    {
+        public static IEnumerable<T> NullSafeWhere<T>(this IEnumerable<T> source,
+            Func<T, bool> predicate)
+        {
+            return predicate == null ? source : source.Where(predicate);
+        }
+
+        public static IQueryable<T> NullSafeWhere<T>(this IQueryable<T> source,
+            Expression<Func<T, bool>> predicate)
+        {
+            return predicate == null ? source : source.Where(predicate);
         }
     }
 }

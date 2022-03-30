@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using LawyerUpBackend.Application;
+using LawyerUpBackend.Application.Models.Lawyer;
 using LawyerUpBackend.Application.Services;
 using LawyerUpBackend.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +28,9 @@ namespace LawyerUpBackend.API.Controllers
             return Ok(await _lawyerService.GetByIdAsync(id));
         }
         [HttpGet]
-        public async Task<IActionResult> GetListByName(string? name)
+        public async Task<IActionResult> GetListByName([FromQuery] LawyerListQueryModel query)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return Ok(await _lawyerService.GetAllAsync());
-            }
-            else
-            {
-                return Ok(await _lawyerService.GetListByQuery(name));
-            }
+            return Ok(await _lawyerService.GetListByQuery(query));
         }
     }
 }

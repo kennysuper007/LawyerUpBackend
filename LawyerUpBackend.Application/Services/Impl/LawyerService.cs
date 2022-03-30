@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
+using LawyerUpBackend.Application.Dtos;
 using LawyerUpBackend.Application.Models.Lawyer;
+using LawyerUpBackend.Core.Entities;
 using LawyerUpBackend.DataAccess.Repositiories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +19,7 @@ namespace LawyerUpBackend.Application.Services.Impl
         private readonly ILawyerRepostiory _repository;
         private readonly IMapper _mapper;
 
-        public LawyerService(ILawyerRepostiory repository,IMapper mapper)
+        public LawyerService(ILawyerRepostiory repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -32,10 +37,32 @@ namespace LawyerUpBackend.Application.Services.Impl
             return _mapper.Map<LawyerResponseModel>(lawyer);
         }
 
-        public async Task<IEnumerable<LawyerListResponseModel>> GetListByQuery(string query)
+        public async Task<PagedResultDto<LawyerListResponseModel>> GetListByQuery(LawyerListQueryModel input)
         {
-            var lawyerList = await _repository.GetAllAsync(lawyer=> lawyer.Name.Contains(query));
-            return _mapper.Map<IEnumerable<LawyerListResponseModel>>(lawyerList);
+            var query = _repository.GetAll();
+            if (string.IsNullOrEmpty(input.Name) == false)
+            {
+                query = query.Where(x => x.Name.Contains(input.Name));
+            }
+            if (string.IsNullOrEmpty(input.Sex) == false)
+            {
+                string sex_zh = input.Sex == "male" ? "男" : "女";
+                query = query.Where(i => i.Sex.Contains(input.Sex));
+            }
+            var count = query.Count();
+            query = query.OrderBy(input.Sorting).Skip((input.CurrentPage - 1) * input.MaxResultCount).Take(input.MaxResultCount);
+            var result = await query.AsNoTracking().ToListAsync();
+            var returnValue = new PagedResultDto<LawyerListResponseModel>()
+            {
+                CurrentPage = input.CurrentPage,
+                TotalCount = count,
+                MaxResultCount = input.MaxResultCount,
+                Data = _mapper.Map<List<LawyerListResponseModel>>(result),
+                FilterText = input.FilterText,
+                Sorting = input.Sorting,
+            };
+            return returnValue;
         }
     }
+
 }

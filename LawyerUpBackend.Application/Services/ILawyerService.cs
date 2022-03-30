@@ -1,4 +1,5 @@
-﻿using LawyerUpBackend.Application.Models.Lawyer;
+﻿using LawyerUpBackend.Application.Dtos;
+using LawyerUpBackend.Application.Models.Lawyer;
 using LawyerUpBackend.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace LawyerUpBackend.Application.Services
     {
         Task<IEnumerable<LawyerListResponseModel>> GetAllAsync();
         Task<LawyerResponseModel> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<LawyerListResponseModel>> GetListByQuery(string query);
+        Task<PagedResultDto<LawyerListResponseModel>> GetListByQuery(LawyerListQueryModel query);
 
     }
 }

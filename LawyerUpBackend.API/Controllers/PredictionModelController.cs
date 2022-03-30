@@ -1,4 +1,5 @@
-﻿using LawyerUpBackend.Application.Models.PredictionModel;
+﻿using LawyerUpBackend.Application.Exceptions;
+using LawyerUpBackend.Application.Models.PredictionModel;
 using LawyerUpBackend.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +17,17 @@ namespace LawyerUpBackend.API.Controllers
             _predictionModelService = predictionModelService;
         }
         
-        [HttpGet]
-        public async Task<IActionResult> CreateAsync(string predictionModelQuery)
+        [HttpPost]
+        public async Task<IActionResult> SearchAsync(string predictionModelQuery)
         {
-            return Ok(await _predictionModelService.GetPredictionAsync(predictionModelQuery));
+            try
+            {
+                return Ok(await _predictionModelService.GetPredictionAsync(predictionModelQuery));
+            }catch(SearchNotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+
         }
     }
 }

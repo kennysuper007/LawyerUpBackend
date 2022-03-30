@@ -1,4 +1,5 @@
-﻿using LawyerUpBackend.Application.Models.PredictionModel;
+﻿using LawyerUpBackend.Application.Exceptions;
+using LawyerUpBackend.Application.Models.PredictionModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,7 +24,7 @@ namespace LawyerUpBackend.Application.Services.Impl
             string result = await Run_cmd(querywords);
             if (string.IsNullOrEmpty(result))
             {
-                throw new Exception("Run Python Failed!");
+                throw new SearchNotFoundException();
             }
             else
             {
@@ -39,7 +40,6 @@ namespace LawyerUpBackend.Application.Services.Impl
         {
             var result = await Task.Run(() =>
             {
-                Console.WriteLine("Process Started at " + DateTime.Now.ToString());
                 ProcessStartInfo start = new ProcessStartInfo();
                 start.FileName = _pythonPath;
                 start.Arguments = string.Format("{0} {1}", _executePath, args);
@@ -56,6 +56,5 @@ namespace LawyerUpBackend.Application.Services.Impl
             });
             return result;
         }
-        
     }
 }
