@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LawyerUpBackend.Application;
+using LawyerUpBackend.Application.Exceptions;
 using LawyerUpBackend.Application.Models.Lawyer;
 using LawyerUpBackend.Application.Services;
 using LawyerUpBackend.Core.Entities;
@@ -30,7 +31,15 @@ namespace LawyerUpBackend.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListByName([FromQuery] LawyerListQueryModel query)
         {
-            return Ok(await _lawyerService.GetListByQuery(query));
+            try
+            {
+                return Ok(await _lawyerService.GetListByQuery(query));
+
+            }catch (SearchNotFoundException)
+            {
+                return NoContent();
+            }
+
         }
     }
 }

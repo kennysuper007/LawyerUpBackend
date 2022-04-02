@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using LawyerUpBackend.Application.Dtos;
+using LawyerUpBackend.Application.Exceptions;
 using LawyerUpBackend.Application.Models.Lawyer;
 using LawyerUpBackend.Core.Entities;
 using LawyerUpBackend.DataAccess.Repositiories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text;
@@ -49,8 +49,13 @@ namespace LawyerUpBackend.Application.Services.Impl
                 string sex_zh = input.Sex == "male" ? "男" : "女";
                 query = query.Where(i => i.Sex.Contains(input.Sex));
             }
-            var count = query.Count();
-            query = query.OrderBy(input.Sorting).Skip((input.CurrentPage - 1) * input.MaxResultCount).Take(input.MaxResultCount);
+            var count = await query.CountAsync();
+            if (count == 0)
+            {
+                throw new SearchNotFoundException();
+            }
+            query = query.OrderBy(input.Sort).OrderBy(input.SortDesc + " desc");
+            query = query.Skip((input.CurrentPage - 1) * input.MaxResultCount).Take(input.MaxResultCount);
             var result = await query.AsNoTracking().ToListAsync();
             var returnValue = new PagedResultDto<LawyerListResponseModel>()
             {
@@ -59,7 +64,8 @@ namespace LawyerUpBackend.Application.Services.Impl
                 MaxResultCount = input.MaxResultCount,
                 Data = _mapper.Map<List<LawyerListResponseModel>>(result),
                 FilterText = input.FilterText,
-                Sorting = input.Sorting,
+                Sort = input.Sort,
+                SortDesc = input.SortDesc,
             };
             return returnValue;
         }

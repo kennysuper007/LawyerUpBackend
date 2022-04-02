@@ -14,5 +14,6 @@ namespace LawyerUpBackend.Application.Models.Lawyer
         public string? Email { get; set; }
         public string? Tel { get; set; }
         public string? Address { get; set; }
+        public Guid? Id { get; set; }
     }
 }

@@ -16,7 +16,9 @@ namespace LawyerUpBackend.Application.Dtos
         }
         public int CurrentPage { get; set; }
         public int MaxResultCount { get; set; }
-        public string? Sorting{ get; set; }
+        public string? Sort{ get; set; }
+        public string? SortDesc { get; set; }
+
         public string? FilterText { get; set; }
     }
 }

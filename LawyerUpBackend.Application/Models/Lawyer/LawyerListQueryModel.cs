@@ -6,7 +6,7 @@ namespace LawyerUpBackend.Application.Models.Lawyer
     {
         public LawyerListQueryModel()
         {
-            Sorting = "Name";
+            Sort = "Name";
             FilterText = "";
         }
         public string? Name { get; set; }

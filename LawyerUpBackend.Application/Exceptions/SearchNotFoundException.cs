@@ -8,5 +8,7 @@ namespace LawyerUpBackend.Application.Exceptions
 {
     public class SearchNotFoundException:Exception
     {
+        public Uri? RequestUrl { get;set; }
+        
     }
 }
