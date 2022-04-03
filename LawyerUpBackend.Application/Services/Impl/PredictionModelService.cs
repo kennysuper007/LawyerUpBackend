@@ -52,7 +52,13 @@ namespace LawyerUpBackend.Application.Services.Impl
                     using (StreamReader reader = process.StandardOutput)
                     {
                         string result = reader.ReadToEnd();
-                        return result[1..^1].Split(",", StringSplitOptions.RemoveEmptyEntries); ;
+                        var list = result.Substring(1, result.Length - 4).Split(",", StringSplitOptions.RemoveEmptyEntries);
+                        List<string> returnList = new List<string>();
+                        foreach (var item in list)
+                        {
+                            returnList.Add(item.TrimStart().TrimEnd().Replace("'", ""));
+                        }
+                        return returnList.ToArray();
                     }
                 }
             });
