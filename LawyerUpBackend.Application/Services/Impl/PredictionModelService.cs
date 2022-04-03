@@ -21,8 +21,8 @@ namespace LawyerUpBackend.Application.Services.Impl
         }
         async Task<PredictionModelResult> IPredictionModelService.GetPredictionAsync(string querywords)
         {
-            string result = await Run_cmd(querywords);
-            if (string.IsNullOrEmpty(result))
+            string[] result = await Run_cmd(querywords);
+            if (result == null)
             {
                 throw new SearchNotFoundException();
             }
@@ -31,12 +31,14 @@ namespace LawyerUpBackend.Application.Services.Impl
                 var predictionResult = new PredictionModelResult()
                 {
                     Success = true,
-                    Result = result
+                    First = result[0],
+                    Second  = result[1],
+                    Third = result[2]
                 };
                 return predictionResult;
             }
         }
-        private async Task<string> Run_cmd(string args = "")
+        private async Task<string[]> Run_cmd(string args = "")
         {
             var result = await Task.Run(() =>
             {
@@ -50,7 +52,7 @@ namespace LawyerUpBackend.Application.Services.Impl
                     using (StreamReader reader = process.StandardOutput)
                     {
                         string result = reader.ReadToEnd();
-                        return result;
+                        return result[1..^1].Split(",", StringSplitOptions.RemoveEmptyEntries); ;
                     }
                 }
             });

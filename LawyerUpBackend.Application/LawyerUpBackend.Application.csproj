@@ -17,4 +17,8 @@
     <ProjectReference Include="..\LawyerUpBackend.DataAccess\LawyerUpBackend.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
+
 </Project>

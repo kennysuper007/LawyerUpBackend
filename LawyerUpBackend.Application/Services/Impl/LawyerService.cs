@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,7 +55,7 @@ namespace LawyerUpBackend.Application.Services.Impl
             {
                 throw new SearchNotFoundException();
             }
-            query = query.OrderBy(input.Sort).OrderBy(input.SortDesc + " desc");
+            ApplySort(ref query, input.Sort);
             query = query.Skip((input.CurrentPage - 1) * input.MaxResultCount).Take(input.MaxResultCount);
             var result = await query.AsNoTracking().ToListAsync();
             var returnValue = new PagedResultDto<LawyerListResponseModel>()
@@ -65,9 +66,46 @@ namespace LawyerUpBackend.Application.Services.Impl
                 Data = _mapper.Map<List<LawyerListResponseModel>>(result),
                 FilterText = input.FilterText,
                 Sort = input.Sort,
-                SortDesc = input.SortDesc,
             };
             return returnValue;
+        }
+        private void ApplySort(ref IQueryable<Lawyer> lawyers, string orderByQueryString)
+        {
+            if (string.IsNullOrWhiteSpace(orderByQueryString))
+            {
+                lawyers = lawyers.OrderBy(x => x.Name);
+                return;
+            }
+
+            var orderParams = orderByQueryString.Trim().Split(',');
+            var propertyInfos = typeof(Lawyer).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var orderQueryBuilder = new StringBuilder();
+
+            foreach (var param in orderParams)
+            {
+                if (string.IsNullOrWhiteSpace(param))
+                    continue;
+
+                var propertyFromQueryName = param.Split(" ")[0];
+                var objectProperty = propertyInfos.FirstOrDefault(pi => pi.Name.Equals(propertyFromQueryName, StringComparison.InvariantCultureIgnoreCase));
+
+                if (objectProperty == null)
+                    continue;
+
+                var sortingOrder = param.EndsWith(" desc") ? "descending" : "ascending";
+
+                orderQueryBuilder.Append($"{objectProperty.Name.ToString()} {sortingOrder}, ");
+            }
+
+            var orderQuery = orderQueryBuilder.ToString().TrimEnd(',', ' ');
+
+            if (string.IsNullOrWhiteSpace(orderQuery))
+            {
+                lawyers = lawyers.OrderBy(x => x.Name);
+                return;
+            }
+
+            lawyers = lawyers.OrderBy(orderQuery);
         }
     }
 
