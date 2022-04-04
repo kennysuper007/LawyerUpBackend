@@ -19,9 +19,9 @@ namespace LawyerUpBackend.Application.Services.Impl
             _executePath = executePath;
             _pythonPath = pythonPath;
         }
-        async Task<PredictionModelResult> IPredictionModelService.GetPredictionAsync(string querywords)
+        async Task<PredictionModelResult> IPredictionModelService.GetPredictionAsync(PredictionModelQuery querywords)
         {
-            string[] result = await Run_cmd(querywords);
+            string[] result = await Run_cmd(querywords.Query);
             if (result == null)
             {
                 throw new SearchNotFoundException();
