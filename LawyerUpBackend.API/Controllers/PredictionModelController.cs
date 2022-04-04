@@ -18,7 +18,7 @@ namespace LawyerUpBackend.API.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> SearchAsync(string predictionModelQuery)
+        public async Task<IActionResult> SearchAsync([FromBody] PredictionModelQuery predictionModelQuery)
         {
             try
             {

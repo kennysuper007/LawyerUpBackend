@@ -9,6 +9,6 @@ namespace LawyerUpBackend.Application.Services
 {
     public interface IPredictionModelService
     {
-        Task<PredictionModelResult> GetPredictionAsync(string querywords);
+        Task<PredictionModelResult> GetPredictionAsync(PredictionModelQuery querywords);
     }
 }
